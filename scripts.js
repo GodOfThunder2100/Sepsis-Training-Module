@@ -10,6 +10,7 @@ const roleBadge = document.getElementById('role-badge');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const currentStepNum = document.getElementById('current-step-num');
+const totalStepsNum = document.getElementById('total-steps-num');
 
 // ============ INITIALIZATION ============
 document.getElementById('start-course-btn').addEventListener('click', () => {
@@ -25,17 +26,23 @@ document.getElementById('start-course-btn').addEventListener('click', () => {
 function setRole(role) {
   document.body.classList.remove('role-clinical', 'role-support');
   document.body.classList.add(role === 'clinical' ? 'role-clinical' : 'role-support');
-  roleBadge.textContent = role === 'clinical' ? 'Nurse / RUSON track' : 'Everyone else track';
-  
+
+  const roleLabel = role === 'clinical'
+    ? 'Nurse / RUSON track'
+    : 'Everyone else track';
+
+  roleBadge.textContent = roleLabel;
+
   fork.classList.add('hidden');
   app.classList.remove('hidden');
-  
+
   localStorage.setItem('sepsis-training-role', role);
-  
+
   currentStep = 0;
   updateStepView();
   renderQuiz();
   resetScenarios();
+  updateVitalsForStep();
   window.scrollTo(0, 0);
 }
 
@@ -71,6 +78,8 @@ function updateStepView() {
   document.getElementById('progress-fill').style.width = `${fillPercentage}%`;
 
   currentStepNum.textContent = currentStep + 1;
+  if (totalStepsNum) totalStepsNum.textContent = totalSteps;
+
   prevBtn.disabled = currentStep === 0;
 
   if (currentStep === totalSteps - 1) {
@@ -79,6 +88,7 @@ function updateStepView() {
     nextBtn.textContent = 'Next \u2192';
   }
 
+  updateVitalsForStep();
   window.scrollTo(0, 0);
 }
 
@@ -98,6 +108,40 @@ nextBtn.addEventListener('click', () => {
   }
 });
 
+// ============ VITALS HELPERS ============
+function setVital(id, value, thresholds) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = value;
+
+  el.parentElement.classList.remove('warning', 'danger');
+
+  if (value < thresholds.low || value > thresholds.high) {
+    el.parentElement.classList.add('danger');
+  } else if (
+    (thresholds.lowWarn && value < thresholds.lowWarn) ||
+    (thresholds.highWarn && value > thresholds.highWarn)
+  ) {
+    el.parentElement.classList.add('warning');
+  }
+}
+
+function updateVitalsForStep() {
+  // Example: only show “abnormal” vitals on step 2 (panel index 1)
+  if (currentStep === 1) {
+    setVital('rr-value', 24, { low: 12, high: 20, lowWarn: 12, highWarn: 22 });
+    setVital('hr-value', 112, { low: 60, high: 100, lowWarn: 50, highWarn: 110 });
+    setVital('temp-value', 37.2, { low: 36.0, high: 37.5, lowWarn: 36.0, highWarn: 38.0 });
+    setVital('sbp-value', 98, { low: 110, high: 140, lowWarn: 100, highWarn: 150 });
+  } else {
+    // Normal-ish values on other steps
+    setVital('rr-value', 18, { low: 12, high: 20, lowWarn: 12, highWarn: 22 });
+    setVital('hr-value', 88, { low: 60, high: 100, lowWarn: 50, highWarn: 110 });
+    setVital('temp-value', 36.8, { low: 36.0, high: 37.5, lowWarn: 36.0, highWarn: 38.0 });
+    setVital('sbp-value', 128, { low: 110, high: 140, lowWarn: 100, highWarn: 150 });
+  }
+}
+
 // ============ CASE SCENARIO ============
 function resetScenarios() {
   document.querySelectorAll('.scenario').forEach((scenario) => {
@@ -112,7 +156,7 @@ document.querySelectorAll('.scenario-options').forEach((group) => {
   const correctIndex = parseInt(group.dataset.correct, 10);
   const feedback = group.parentElement.querySelector('.scenario-feedback');
   const options = group.querySelectorAll('.option');
-  
+
   options.forEach((btn, i) => {
     btn.addEventListener('click', () => {
       options.forEach((b) => b.classList.remove('correct', 'incorrect'));
@@ -192,21 +236,21 @@ function renderQuiz() {
   const role = document.body.classList.contains('role-clinical') ? 'clinical' : 'support';
   const container = document.getElementById('quiz-container');
   if (!container) return;
-  
+
   container.innerHTML = '';
-  
+
   const result = document.getElementById('quiz-result');
-  if (result) result.classList.add('hidden');
+  if (result) result.classList.add('hidden', 'low');
 
   quizBank[role].forEach((item, qi) => {
     const div = document.createElement('div');
     div.className = 'quiz-q';
     div.dataset.correct = item.correct;
-    
+
     const choicesHtml = item.choices.map((c, ci) => `
       <label><input type="radio" name="q${qi}" value="${ci}"> ${c}</label>
     `).join('');
-    
+
     div.innerHTML = `<p>${qi + 1}. ${item.q}</p><div class="quiz-choices">${choicesHtml}</div>`;
     container.appendChild(div);
   });
@@ -215,7 +259,7 @@ function renderQuiz() {
 document.getElementById('quiz-submit').addEventListener('click', () => {
   const questions = document.querySelectorAll('.quiz-q');
   let score = 0;
-  
+
   questions.forEach((qDiv) => {
     const correct = parseInt(qDiv.dataset.correct, 10);
     const selected = qDiv.querySelector('input:checked');
@@ -223,17 +267,17 @@ document.getElementById('quiz-submit').addEventListener('click', () => {
       score++;
     }
   });
-  
+
   const result = document.getElementById('quiz-result');
   result.classList.remove('hidden', 'low');
-  
+
   const pct = Math.round((score / questions.length) * 100);
   if (pct < 60) {
     result.classList.add('low');
   }
-  
+
   result.textContent = `Score: ${score} / ${questions.length} (${pct}%)`;
-  
+
   const role = document.body.classList.contains('role-clinical') ? 'clinical' : 'support';
   localStorage.setItem(`sepsis-training-score-${role}`, pct);
 });
