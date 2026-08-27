@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recognition & Escalation of Sepsis in Aged Care</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+  --moss: #24422B;
+  --moss-soft: #2F5233;
+  --fern: #4C7A52;
+  --sage: #CFE8C4;
+  --sage-pale: #EFF3E7;
+  --paper: #F7F5EC;
+  --ink: #16231A;
+  --ink-soft: #46523F;
+  --alert: #B7412F;
+  --gold: #C99A3E;
+  --line: rgba(36, 66, 43, 0.16);
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(22, 35, 26, 0.10);
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* monitor palette */
+  --mon-bg: #0b0f0d;
+  --mon-bezel: #1c2b22;
+  --mon-grid: rgba(79, 217, 255, 0.07);
+  --mon-hr: #39ff88;
+  --mon-rr: #4fd9ff;
+  --mon-bp: #ff5c7a;
+  --mon-temp: #ffd166;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.hidden { display: none !important; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ============ BRAND LOGO ============ */
+.brand-logo { width: 90px; height: 90px; margin: 0 auto 1.5rem; }
+.logo-svg, .topbar-logo { width: 100%; height: 100%; display: block; }
+.logo-ring { fill: none; stroke: var(--fern); stroke-width: 4; stroke-dasharray: 280; animation: rotate-ring 12s linear infinite; transform-origin: center; }
+.logo-cross { fill: none; stroke: var(--moss); stroke-width: 8; stroke-linecap: round; }
+.logo-pulse { fill: none; stroke: var(--alert); stroke-width: 3; animation: pulse-wave 2s ease-in-out infinite; }
+.logo-core { fill: var(--gold); }
+
+@keyframes rotate-ring { 100% { transform: rotate(360deg); } }
+@keyframes pulse-wave { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+
+.topbar-logo { width: 32px; height: 32px; }
+.topbar-logo .logo-ring { stroke: var(--sage); stroke-width: 6; }
+.topbar-logo .logo-cross { stroke: white; stroke-width: 10; }
+
+/* ============ COVER SCREEN ============ */
+.cover-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--moss) 0%, #122116 100%);
+  color: white;
+  text-align: center;
+}
+.cover-content { max-width: 42rem; animation: float-up 0.8s ease-out; }
+.cover-title { font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.1; margin: 0.8rem 0; color: white; }
+.cover-subtitle { font-size: 1.15rem; color: var(--sage); margin-bottom: 1.2rem; }
+.cover-stats { display: flex; justify-content: center; gap: 2.2rem; margin: 2rem 0 2.5rem; flex-wrap: wrap; }
+.cover-stat { text-align: center; }
+.cover-stat strong { display: block; font-family: var(--font-display); font-size: 2rem; color: var(--gold); }
+.cover-stat span { font-size: 0.78rem; color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 0.04em; }
+.cover-credits { font-family: var(--font-mono); font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 2.5rem; }
+.cover-credits strong { color: var(--gold); font-size: 1.1rem; display: block; }
+
+.btn-large { padding: 1.1rem 2.5rem; font-size: 1.1rem; }
+.glow-effect { box-shadow: 0 0 20px rgba(201, 154, 62, 0.4); transition: transform 0.2s, box-shadow 0.2s; }
+.glow-effect:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(201, 154, 62, 0.7); }
+
+/* ============ FORK ============ */
+.fork { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4vh 6vw; text-align: center; gap: 2.5rem; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fern); margin: 0 0 0.5rem; }
+.fork-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.2rem); margin: 0 0 0.8rem; color: var(--moss); }
+.fork-sub { font-size: 1.02rem; color: var(--ink-soft); max-width: 32rem; margin: 0 auto; }
+.fork-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; max-width: 58rem; }
+.path-card { position: relative; text-align: left; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.8rem; background: white; box-shadow: var(--shadow); transition: transform 0.25s, box-shadow 0.25s; display: flex; flex-direction: column; gap: 0.5rem; }
+.path-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(22, 35, 26, 0.15); }
+.path-clinical { border-top: 5px solid var(--moss); }
+.path-support { border-top: 5px solid var(--fern); }
+.path-visual { height: 75px; }
+.path-visual svg { width: 100%; height: 100%; }
+.path-kicker { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; color: var(--fern); }
+.path-card h3 { font-family: var(--font-display); font-size: 1.5rem; margin: 0; color: var(--moss); }
+.path-card p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.45; }
+.path-cta { margin-top: 0.5rem; font-weight: 600; color: var(--moss); font-size: 0.95rem; }
+.fork-footnote { font-size: 0.85rem; color: var(--ink-soft); opacity: 0.8; }
+
+.ecg-line { fill: none; stroke: var(--moss); stroke-width: 2.5; stroke-dasharray: 620; stroke-dashoffset: 620; animation: draw-ecg 2.6s ease-out infinite; }
+@keyframes draw-ecg { 0% { stroke-dashoffset: 620; } 55%, 100% { stroke-dashoffset: 0; } }
+.relay-dot { fill: var(--sage); stroke: var(--fern); stroke-width: 2; }
+.relay-line { stroke: var(--fern); stroke-width: 2; stroke-dasharray: 6 6; }
+.relay-dot--b { animation: pulse-relay 1.8s infinite 0.3s; }
+.relay-dot--c { animation: pulse-relay 1.8s infinite 0.9s; }
+@keyframes pulse-relay { 0%, 100% { r: 14; } 50% { r: 17; } }
+
+/* ============ APP SHELL & PROGRESS BAR ============ */
+.app { min-height: 100vh; display: flex; flex-direction: column; background: var(--paper); }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 2rem; background: var(--moss); color: white; }
+.topbar-left { display: flex; align-items: center; gap: 0.8rem; }
+.brand { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; }
+.role-badge { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; background: var(--sage); color: var(--moss); padding: 0.25rem 0.6rem; border-radius: 999px; }
+.link-btn { background: none; border: 1px solid rgba(255,255,255,0.35); color: white; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; }
+
+/* PROGRESS WIZARD */
+.progress-bar-container { position: relative; background: var(--sage-pale); padding: 1rem 2rem; border-bottom: 1px solid var(--line); }
+.progress-steps { display: flex; justify-content: space-between; position: relative; z-index: 2; max-width: 52rem; margin: 0 auto; }
+.step-node { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; opacity: 0.5; transition: opacity 0.3s; }
+.step-node.active, .step-node.completed { opacity: 1; }
+.node-num { width: 28px; height: 28px; border-radius: 50%; background: white; border: 2px solid var(--ink-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; }
+.step-node.active .node-num { background: var(--moss); color: white; border-color: var(--moss); }
+.step-node.completed .node-num { background: var(--fern); color: white; border-color: var(--fern); }
+.node-label { font-size: 0.72rem; font-weight: 600; color: var(--ink); }
+.progress-line-fill { position: absolute; top: 1.8rem; left: 10%; height: 3px; background: var(--moss); transition: width 0.3s ease; z-index: 1; }
+
+/* ============ PANEL CONTENT ============ */
+.content { max-width: 50rem; margin: 0 auto; padding: 2rem 1.5rem 6rem; width: 100%; flex: 1; }
+.panel { display: none; }
+.panel.active { display: block; animation: float-up 0.4s ease-out; }
+@keyframes float-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.panel h2 { font-family: var(--font-display); font-size: 1.85rem; color: var(--moss); margin: 0 0 0.5rem; }
+.panel h3 { font-family: var(--font-display); font-size: 1.2rem; color: var(--moss-soft); margin: 1.8rem 0 0.6rem; }
+.lede { color: var(--ink-soft); font-size: 1rem; line-height: 1.55; max-width: 42rem; }
+.section-divider { border: none; border-top: 1px solid var(--line); margin: 2.2rem 0; }
+
+[data-role-visible], [data-role-content] { display: none; }
+.role-clinical [data-role-visible="clinical"], .role-clinical [data-role-content="clinical"] { display: block; }
+.role-support [data-role-visible="support"], .role-support [data-role-content="support"] { display: block; }
+
+.definition-box { background: white; padding: 1.4rem 1.6rem; border-radius: var(--radius); margin-bottom: 1.5rem; }
+.highlight-border { border-left: 5px solid var(--moss); box-shadow: var(--shadow); }
+.definition-text { font-size: 1.02rem; line-height: 1.6; margin: 0 0 0.8rem; }
+.definition-text:last-child { margin-bottom: 0; }
+
+/* STAT STRIP (fills empty space on step 1 with grounding context) */
+.stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.4rem 0 1.8rem; }
+.stat-tile { background: var(--moss); color: white; border-radius: var(--radius); padding: 1.1rem 1rem; text-align: center; }
+.stat-tile strong { display: block; font-family: var(--font-display); font-size: 1.7rem; color: var(--sage); }
+.stat-tile span { font-size: 0.76rem; color: rgba(255,255,255,0.8); line-height: 1.3; display: block; margin-top: 0.2rem; }
+
+/* MEDIA GALLERY */
+.media-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.2rem 0; }
+.media-card { background: white; border-radius: var(--radius); padding: 0.8rem; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.gallery-img { width: 100%; height: 210px; object-fit: cover; border-radius: 8px; display: block; }
+.media-caption { font-size: 0.78rem; color: var(--ink-soft); display: block; margin-top: 0.6rem; text-align: center; }
+
+/* CARDS & VITALS */
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.2rem 0; }
+.info-card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.3rem; }
+.info-card--flagged { border-color: var(--moss); border-width: 2px; background: var(--sage-pale); }
+.info-card ul { margin: 0; padding-left: 1.1rem; line-height: 1.6; }
+
+.callout { background: var(--sage-pale); border-left: 4px solid var(--fern); border-radius: 0 10px 10px 0; padding: 0.9rem 1.1rem; margin: 1.2rem 0; }
+.citation { font-family: var(--font-mono); font-size: 0.7rem; color: var(--fern); margin-top: 0.4rem; }
+
+/* ============ VITALS MONITOR (bedside-monitor styled) ============ */
+.monitor-shell {
+  background: linear-gradient(180deg, var(--mon-bezel), #10190f);
+  border-radius: 18px;
+  padding: 0.9rem;
+  margin: 1.2rem 0 1.6rem;
+  box-shadow: var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+.monitor-topline {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.2rem 0.6rem 0.7rem;
+  font-family: var(--font-mono); font-size: 0.68rem; color: rgba(255,255,255,0.55);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.monitor-topline .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mon-hr); display: inline-block; margin-right: 0.4rem; animation: dot-blink 1.4s infinite; }
+@keyframes dot-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+.monitor-screen {
+  background: repeating-linear-gradient(0deg, var(--mon-grid) 0, var(--mon-grid) 1px, transparent 1px, transparent 22px),
+              repeating-linear-gradient(90deg, var(--mon-grid) 0, var(--mon-grid) 1px, transparent 1px, transparent 22px),
+              var(--mon-bg);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  overflow: hidden;
+}
+.monitor-cell {
+  padding: 0.9rem 0.8rem 0.7rem;
+  min-height: 128px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.monitor-cell + .monitor-cell { border-left: 1px solid rgba(255,255,255,0.06); }
+.monitor-cell .m-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.55); }
+.monitor-cell .m-wave { width: 100%; height: 34px; margin: 0.3rem 0; opacity: 0.9; }
+.monitor-cell .m-value { font-family: var(--font-mono); font-weight: 600; font-size: 1.35rem; line-height: 1; }
+.monitor-cell .m-threshold { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,255,255,0.5); margin-top: 0.15rem; }
+.m-hr .m-value { color: var(--mon-hr); }
+.m-rr .m-value { color: var(--mon-rr); }
+.m-bp .m-value { color: var(--mon-bp); }
+.m-temp .m-value { color: var(--mon-temp); }
+.wave-hr { stroke: var(--mon-hr); }
+.wave-rr { stroke: var(--mon-rr); }
+.wave-bp { stroke: var(--mon-bp); }
+.wave-line { fill: none; stroke-width: 2; }
+.wave-hr { animation: wave-scroll 2.2s linear infinite; }
+.wave-rr { animation: wave-scroll 3.4s linear infinite; }
+.wave-bp { animation: wave-scroll 2.8s linear infinite; }
+@keyframes wave-scroll { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -300; } }
+.temp-bar-track { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; margin: 0.5rem 0 0.3rem; overflow: hidden; }
+.temp-bar-fill { height: 100%; width: 62%; background: linear-gradient(90deg, var(--mon-rr), var(--mon-temp), var(--mon-bp)); border-radius: 999px; }
+
+.monitor-flags { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.9rem; }
+.monitor-flag { background: white; border: 1.5px dashed var(--moss); border-radius: 10px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.7rem; }
+.monitor-flag .flag-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--sage-pale); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.monitor-flag .flag-icon svg { width: 18px; height: 18px; stroke: var(--moss); fill: none; stroke-width: 2; }
+.monitor-flag strong { display: block; font-size: 0.88rem; color: var(--moss); }
+.monitor-flag span { font-size: 0.78rem; color: var(--ink-soft); }
+.monitor-note { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.7rem; font-style: italic; }
+
+.isbar { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.4rem; }
+.isbar-row { display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+.isbar-row:last-child { border-bottom: none; }
+.isbar-letter { font-family: var(--font-mono); font-weight: 700; background: var(--sage); color: var(--moss); width: 1.8rem; height: 1.8rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+.say-this { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.4rem; margin-top: 1rem; }
+.say-this ol { padding-left: 1.1rem; line-height: 1.6; }
+
+.script-examples { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+.script-card { border-radius: var(--radius); padding: 1rem 1.1rem; font-size: 0.88rem; line-height: 1.5; }
+.script-card.avoid { background: #FBEDE9; border: 1px solid rgba(183,65,47,0.3); }
+.script-card.use { background: var(--sage-pale); border: 1px solid rgba(76,122,82,0.3); }
+.script-card p { margin: 0.3rem 0 0; color: var(--ink-soft); }
+.script-card .script-kicker { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.script-card.avoid .script-kicker { color: var(--alert); }
+.script-card.use .script-kicker { color: var(--fern); }
+
+.scenario-text { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.4rem; line-height: 1.6; }
+.scenario-prompt { font-weight: 700; margin-top: 1.1rem; }
+.scenario-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
+.option { text-align: left; background: white; border: 1.5px solid var(--line); border-radius: 8px; padding: 0.8rem 1rem; font-size: 0.95rem; }
+.option:hover { border-color: var(--fern); }
+.option.correct { border-color: var(--fern); background: var(--sage-pale); font-weight: 600; }
+.option.incorrect { border-color: var(--alert); background: #FBEDE9; }
+.scenario-feedback { margin-top: 0.8rem; font-weight: 600; min-height: 1.2rem; }
+
+.quiz-intro { background: var(--sage-pale); border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 1.4rem; font-size: 0.92rem; color: var(--ink-soft); }
+.quiz-q { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+.quiz-q p { font-weight: 600; margin-top: 0; }
+.quiz-choices { display: flex; flex-direction: column; gap: 0.4rem; }
+.quiz-choices label { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem; border-radius: 6px; cursor: pointer; }
+.quiz-choices label:hover { background: var(--sage-pale); }
+
+.btn-primary { background: var(--moss); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem; }
+.btn-primary:hover:not(:disabled) { background: var(--moss-soft); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-secondary { background: white; border: 1px solid var(--line); color: var(--ink); padding: 0.8rem 1.5rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem; }
+.btn-secondary:hover:not(:disabled) { background: var(--sage-pale); }
+.btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.quiz-result { margin-top: 1.2rem; padding: 1rem 1.2rem; border-radius: var(--radius); background: var(--sage-pale); border: 1px solid var(--fern); font-family: var(--font-mono); }
+.quiz-result.low { background: #FBEDE9; border-color: var(--alert); }
+
+.ref-list { line-height: 1.8; padding-left: 1.1rem; }
+.resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.4rem; }
+.resource-card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.3rem; }
+.resource-card h4 { margin: 0 0 0.4rem; font-family: var(--font-display); font-size: 1.05rem; color: var(--moss); }
+.resource-card p { margin: 0; font-size: 0.86rem; color: var(--ink-soft); line-height: 1.5; }
+.completion-banner { background: var(--moss); color: white; padding: 1.5rem; border-radius: var(--radius); margin-top: 2rem; text-align: center; }
+.completion-banner h3 { color: var(--sage); margin-top: 0; }
+
+/* LINEAR NAVIGATION FOOTER */
+.nav-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--line); padding: 0.8rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
+.step-counter { font-family: var(--font-mono); font-size: 0.85rem; color: var(--ink-soft); }
+
+@media (max-width: 720px) {
+  .fork-paths, .card-grid, .media-gallery, .script-examples, .resource-grid, .monitor-flags { grid-template-columns: 1fr; }
+  .monitor-screen { grid-template-columns: 1fr 1fr; }
+  .monitor-cell:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .stat-strip { grid-template-columns: 1fr; }
+  .node-label { display: none; }
+  .nav-footer { padding: 0.8rem 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-ring, .logo-pulse, .ecg-line, .relay-dot--b, .relay-dot--c, .wave-hr, .wave-rr, .wave-bp, .monitor-topline .dot {
+    animation: none !important;
+  }
+}
+</style>
+</head>
+<body>
+
+  <!-- ============ COVER SCREEN ============ -->
+  <section id="cover" class="cover-screen">
+    <div class="cover-content">
+      <div class="brand-logo">
+        <svg viewBox="0 0 100 100" class="logo-svg" aria-hidden="true">
+          <circle cx="50" cy="50" r="44" class="logo-ring" />
+          <path d="M 50,22 L 50,78 M 22,50 L 78,50" class="logo-cross" />
+          <path d="M 32,50 Q 42,28 50,50 T 68,50" class="logo-pulse" />
+          <circle cx="50" cy="50" r="6" class="logo-core" />
+        </svg>
+      </div>
+
+      <p class="eyebrow">Aged Care Clinical Safety Training</p>
+      <h1 class="cover-title">Recognition & Escalation<br>of Sepsis in Aged Care</h1>
+      <p class="cover-subtitle">Interactive training for early detection and rapid response</p>
+
+      <div class="cover-stats">
+        <div class="cover-stat"><strong>1 in 3</strong><span>Sepsis deaths are considered preventable with earlier recognition</span></div>
+        <div class="cover-stat"><strong>&lt;1hr</strong><span>Target time from recognition to escalation</span></div>
+        <div class="cover-stat"><strong>6</strong><span>Short modules, ~15 minutes total</span></div>
+      </div>
+
+      <div class="cover-credits">
+        <span>Made by:</span>
+        <strong>The Boys</strong>
+      </div>
+
+      <button id="start-course-btn" class="btn-primary btn-large glow-effect">Begin Course &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ============ ROLE FORK ============ -->
+  <section id="fork" class="fork hidden">
+    <div class="fork-intro">
+      <p class="eyebrow">Select Pathway</p>
+      <h2 class="fork-title">Notice something's<br>not right?</h2>
+      <p class="fork-sub">What happens next depends on your role. Choose your designated track to lock in your module pathway.</p>
+    </div>
+
+    <div class="fork-paths">
+      <button class="path-card path-clinical" data-role="clinical">
+        <div class="path-visual">
+          <svg viewBox="0 0 300 90" class="ecg" preserveAspectRatio="none" aria-hidden="true">
+            <polyline class="ecg-line" points="0,45 40,45 55,45 65,15 75,75 85,45 110,45 130,45 145,20 158,70 172,45 200,45 300,45" />
+          </svg>
+        </div>
+        <span class="path-kicker">Track One</span>
+        <h3>Nurse / RUSON</h3>
+        <p>Recognise the clinical picture, know the physiological thresholds, and lead escalation.</p>
+        <span class="path-cta">Select Clinical Track &rarr;</span>
+      </button>
+
+      <button class="path-card path-support" data-role="support">
+        <div class="path-visual">
+          <svg viewBox="0 0 300 90" class="relay" aria-hidden="true">
+            <circle cx="45" cy="45" r="14" class="relay-dot relay-dot--a"/>
+            <circle cx="150" cy="45" r="14" class="relay-dot relay-dot--b"/>
+            <circle cx="255" cy="45" r="14" class="relay-dot relay-dot--c"/>
+            <line x1="59" y1="45" x2="136" y2="45" class="relay-line"/>
+            <line x1="164" y1="45" x2="241" y2="45" class="relay-line"/>
+          </svg>
+        </div>
+        <span class="path-kicker">Track Two</span>
+        <h3>Everyone Else</h3>
+        <p>PCA, allied health & support staff — spot subtle changes and alert a nurse fast.</p>
+        <span class="path-cta">Select Support Track &rarr;</span>
+      </button>
+    </div>
+
+    <p class="fork-footnote">Modules are linear. Navigation controls will unlock as you progress.</p>
+  </section>
+
+  <!-- ============ APP SHELL ============ -->
+  <div id="app" class="app hidden">
+    <header class="topbar">
+      <div class="topbar-left">
+        <svg viewBox="0 0 100 100" class="topbar-logo" aria-hidden="true">
+          <circle cx="50" cy="50" r="44" class="logo-ring" />
+          <path d="M 50,25 L 50,75 M 25,50 L 75,50" class="logo-cross" />
+        </svg>
+        <span class="brand">Recognise &amp; Escalate</span>
+        <span id="role-badge" class="role-badge"></span>
+      </div>
+      <button id="switch-role" class="link-btn">Reset Role</button>
+    </header>
+
+    <!-- LOCKED PROGRESS TRACKER -->
+    <div class="progress-bar-container">
+      <div class="progress-steps" id="progress-steps">
+        <div class="step-node active" data-step="0"><span class="node-num">1</span><span class="node-label">Definition</span></div>
+        <div class="step-node" data-step="1"><span class="node-num">2</span><span class="node-label">Signs & Symptoms</span></div>
+        <div class="step-node" data-step="2"><span class="node-num">3</span><span class="node-label">Escalation</span></div>
+        <div class="step-node" data-step="3"><span class="node-num">4</span><span class="node-label">Case Scenario</span></div>
+        <div class="step-node" data-step="4"><span class="node-num">5</span><span class="node-label">Knowledge Check</span></div>
+        <div class="step-node" data-step="5"><span class="node-num">6</span><span class="node-label">Resources</span></div>
+      </div>
+      <div class="progress-line-fill" id="progress-fill"></div>
+    </div>
+
+    <main class="content">
+
+      <!-- STEP 1: SEPSIS DEFINITION -->
+      <section class="panel active" data-panel="0">
+        <h2>What is Sepsis?</h2>
+
+        <div data-role-content="clinical">
+          <div class="definition-box highlight-border">
+            <h3>Clinical Definition (Sepsis-3 Consensus)</h3>
+            <p class="definition-text">
+              <strong>Sepsis</strong> is defined as a life-threatening organ dysfunction caused by a dysregulated host response to infection. In frail aged-care residents, acute deterioration in organ function is quantified by a rapid change in baseline parameters (such as qSOFA or NEWS2 triggers).
+            </p>
+            <p class="definition-text">
+              <strong>Septic Shock</strong> occurs when cellular/metabolic abnormalities deepen, characterized by persistent hypotension requiring vasopressors to maintain MAP &ge; 65 mmHg and serum lactate &gt; 2 mmol/L despite adequate fluid resuscitation.
+            </p>
+          </div>
+        </div>
+
+        <div data-role-content="support">
+          <div class="definition-box highlight-border">
+            <h3>Simple Definition</h3>
+            <p class="definition-text">
+              <strong>Sepsis is a medical emergency.</strong> It happens when the body's immune system overreacts to an infection (like a chest or urinary infection) and starts harming its own organs and tissues instead of just fighting the germs.
+            </p>
+            <p class="definition-text">
+              Without quick treatment, sepsis can turn into <strong>septic shock</strong>, causing organs to fail fast. In older adults, it can happen in a matter of hours.
+            </p>
+          </div>
+        </div>
+
+        <div class="stat-strip">
+          <div class="stat-tile"><strong>&gt;65%</strong><span>of sepsis cases in aged care start from a urinary or respiratory infection</span></div>
+          <div class="stat-tile"><strong>Hours</strong><span>not days — how quickly frail older residents can deteriorate</span></div>
+          <div class="stat-tile"><strong>Everyone's job</strong><span>early recognition depends on all staff, not just nurses</span></div>
+        </div>
+
+        <h3>Visual Progression & Presentation</h3>
+        <p class="lede">Sepsis causes systemic tissue hypoperfusion. Patients often look acutely toxic, lethargic, or profoundly mottled. Recognising this appearance early — alongside the behavioural changes covered in the next module — is what gives a resident the best chance of a good outcome.</p>
+
+        <div class="media-gallery">
+          <div class="media-card">
+            <img src="https://www.safetyandquality.gov.au/sites/default/files/styles/embedded/public/2026-05/sepsis-hub-3.png.webp?itok=HT_w0nRj" alt="ACSQHC Clinical Care Standard - Could it be Sepsis?" class="gallery-img" />
+            <span class="media-caption">ACSQHC Standard: Always ask "Could it be Sepsis?"</span>
+          </div>
+          <div class="media-card">
+            <img src="https://scontent-syd2-1.xx.fbcdn.net/v/t39.99422-6/765872363_3606344876203155_6258215332286155139_n.png?stp=dst-jpg_tt6&cstp=mx1080x1350&ctp=s1080x1350&_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=ckEgaZDVS7UQ7kNvwEmflo6&_nc_oc=AdoOZnI89nJEsF8of6_MR-Mt4LZWf2LlGitiZko9XoQuuyZ8wc6w4kAActhAgTNiOis&_nc_zt=14&_nc_ht=scontent-syd2-1.xx&_nc_gid=lNJ50FVejjL8Dm2izpsPaQ&_nc_ss=7b289&oh=00_AQH5wrllRvfcFVqiHL6buguTGl_jIabedblAgwzhIe7NJg&oe=6A80C4A4" alt="Physical manifestations of sepsis including mottling and severe distress" class="gallery-img" />
+            <span class="media-caption">Severe Sepsis: Peripheral cyanosis and skin mottling</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: SIGNS & SYMPTOMS -->
+      <section class="panel" data-panel="1">
+        <h2>Signs &amp; symptoms</h2>
+        <p class="lede">Sepsis in older adults rarely looks textbook. Fever is often absent — watch for change from baseline instead. The list on the right is the one aged care staff miss most often, because it looks like "just getting older" rather than a medical emergency.</p>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <h3>General signs</h3>
+            <ul>
+              <li>Fast breathing or shortness of breath</li>
+              <li>Fast heart rate</li>
+              <li>Fever <em>or</em> feeling abnormally cold</li>
+              <li>Clammy, mottled or discoloured skin</li>
+              <li>Extreme pain or physical discomfort</li>
+            </ul>
+          </div>
+          <div class="info-card info-card--flagged">
+            <h3>In older adults specifically</h3>
+            <ul>
+              <li>New or worsening confusion — often the <em>first</em> sign</li>
+              <li>Sudden functional decline — uncharacteristic weakness</li>
+              <li>Reduced appetite or fluid intake</li>
+              <li>Increased falls or unsteadiness</li>
+              <li>"Just not themselves" — a critical red flag</li>
+            </ul>
+            <p class="citation">Wester et al., 2013; Clifford et al., 2016</p>
+          </div>
+        </div>
+
+        <hr class="section-divider" />
+
+        <div class="callout" data-role-visible="clinical">
+          <strong>Clinical Note:</strong> Diagnostic error rates exceed 10% in older patients due to diagnostic overshadowing from existing comorbidities. Anchor your assessment to the resident's own baseline, not a population norm.
+        </div>
+
+        <div class="callout" data-role-visible="support">
+          <strong>Support Note:</strong> You don't need to diagnose anything. Notice the change and report it immediately — the next module gives you the exact words to use.
+        </div>
+      </section>
+
+      <!-- STEP 3: ESCALATION -->
+      <section class="panel" data-panel="2">
+        <div data-role-content="clinical">
+          <h2>Recognise thresholds, escalate with ISBAR</h2>
+          <p class="lede">Aged-care-derived early warning triggers require rapid escalation. Read the monitor below the way you would a bedside unit — any single reading outside range is a prompt to reassess the whole picture, not just that number.</p>
+
+          <div class="monitor-shell">
+            <div class="monitor-topline"><span><span class="dot"></span>Live reference ranges</span><span>Bed 04 — sample trace</span></div>
+            <div class="monitor-screen">
+              <div class="monitor-cell m-hr">
+                <span class="m-label">Heart rate</span>
+                <svg class="m-wave" viewBox="0 0 220 40" preserveAspectRatio="none" aria-hidden="true">
+                  <polyline class="wave-line wave-hr" stroke-dasharray="6 4" points="0,20 20,20 28,20 34,4 40,36 46,20 70,20 90,20 98,20 104,4 110,36 116,20 140,20 160,20 168,20 174,4 180,36 186,20 210,20 220,20" />
+                </svg>
+                <span class="m-value">&gt;100</span>
+                <span class="m-threshold">bpm — escalate above</span>
+              </div>
+              <div class="monitor-cell m-rr">
+                <span class="m-label">Resp. rate</span>
+                <svg class="m-wave" viewBox="0 0 220 40" preserveAspectRatio="none" aria-hidden="true">
+                  <polyline class="wave-line wave-rr" stroke-dasharray="6 4" points="0,20 15,8 30,32 45,8 60,32 75,8 90,32 105,8 120,32 135,8 150,32 165,8 180,32 195,8 210,32 220,20" />
+                </svg>
+                <span class="m-value">&gt;22 / &lt;8</span>
+                <span class="m-threshold">breaths/min</span>
+              </div>
+              <div class="monitor-cell m-bp">
+                <span class="m-label">Systolic BP</span>
+                <svg class="m-wave" viewBox="0 0 220 40" preserveAspectRatio="none" aria-hidden="true">
+                  <polyline class="wave-line wave-bp" stroke-dasharray="6 4" points="0,30 10,30 16,10 20,34 26,18 40,28 60,30 70,30 76,10 80,34 86,18 100,28 120,30 130,30 136,10 140,34 146,18 160,28 180,30 190,30 196,10 200,34 206,18 220,28" />
+                </svg>
+                <span class="m-value">&lt;100</span>
+                <span class="m-threshold">mmHg — escalate below</span>
+              </div>
+              <div class="monitor-cell m-temp">
+                <span class="m-label">Temperature</span>
+                <div class="temp-bar-track"><div class="temp-bar-fill"></div></div>
+                <span class="m-value">&lt;36&deg; / &gt;38&deg;</span>
+                <span class="m-threshold">outside this band</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="monitor-flags">
+            <div class="monitor-flag">
+              <span class="flag-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 21c0-4 3.5-6.5 7-6.5S19 17 19 21"/></svg></span>
+              <div><strong>New or worse confusion</strong><span>Not captured on a monitor — assess against baseline every time.</span></div>
+            </div>
+            <div class="monitor-flag">
+              <span class="flag-icon"><svg viewBox="0 0 24 24"><path d="M12 3c3 4 6 7 6 11a6 6 0 0 1-12 0c0-4 3-7 6-11z"/></svg></span>
+              <div><strong>Reduced urine output</strong><span>An early, easily missed sign of poor organ perfusion.</span></div>
+            </div>
+          </div>
+          <p class="monitor-note">These aren't electronic readings — they're the clinical thresholds you're checking for at the bedside. Any one of them, in isolation or combination, is enough to escalate.</p>
+
+          <h3>Escalate with ISBAR</h3>
+          <div class="isbar">
+            <div class="isbar-row"><span class="isbar-letter">I</span><div><strong>Identify</strong> — yourself, resident, location</div></div>
+            <div class="isbar-row"><span class="isbar-letter">S</span><div><strong>Situation</strong> — immediate concern</div></div>
+            <div class="isbar-row"><span class="isbar-letter">B</span><div><strong>Background</strong> — relevant history</div></div>
+            <div class="isbar-row"><span class="isbar-letter">A</span><div><strong>Assessment</strong> — vitals, clinical picture</div></div>
+            <div class="isbar-row"><span class="isbar-letter">R</span><div><strong>Recommendation</strong> — action required & timeframe</div></div>
+          </div>
+        </div>
+
+        <div data-role-content="support">
+          <h2>How to inform the nurse</h2>
+          <p class="lede">You are the front-line warning system. Staffing ratios mean your observations save lives — you often spend more one-on-one time with residents than anyone else on shift, which makes your read on "different to usual" genuinely clinical information.</p>
+
+          <div class="say-this">
+            <h3>When alerting the nurse, state:</h3>
+            <ol>
+              <li><strong>Who</strong> — resident name & room</li>
+              <li><strong>What</strong> — exact change observed</li>
+              <li><strong>How different</strong> — compared to baseline</li>
+              <li><strong>Context</strong> — recent falls, missed meals</li>
+            </ol>
+          </div>
+
+          <h3>What this sounds like</h3>
+          <div class="script-examples">
+            <div class="script-card avoid">
+              <span class="script-kicker">Vague — hard to act on</span>
+              <p>"I think something might be a bit off with Mr Nguyen, not sure though."</p>
+            </div>
+            <div class="script-card use">
+              <span class="script-kicker">Specific — easy to act on</span>
+              <p>"Mr Nguyen, room 12 — he's refused breakfast and hasn't said a word to me, and he's usually chatty. That started about an hour ago."</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4: CASE SCENARIO -->
+      <section class="panel" data-panel="3">
+        <h2>Case Scenario</h2>
+        <p class="lede">Apply what you've just covered to a realistic handover situation. Pick the response you'd actually take on shift, then check the reasoning behind the recommended answer.</p>
+
+        <div id="scenario-clinical" class="scenario" data-role-content="clinical">
+          <p class="scenario-text">You review Mrs. Ahmed, 84. Family notes she is "not herself" and skipped breakfast. Vitals: RR 24, HR 108, Temp 37.9&deg;C, BP 98/60. ACD notes "no CPR" but active treatment is specified.</p>
+          <p class="scenario-prompt">What is your immediate action?</p>
+          <div class="scenario-options" data-correct="2">
+            <button class="option">Document and reassess next round</button>
+            <button class="option">Manage supportively only due to DNR status</button>
+            <button class="option">Escalate now using ISBAR — meets deterioration criteria and DNR ≠ no treatment</button>
+          </div>
+          <p class="scenario-feedback"></p>
+        </div>
+
+        <div id="scenario-support" class="scenario" data-role-content="support">
+          <p class="scenario-text">You are assisting Mr. Nguyen, 79, with showering. He is unusually confused, refused breakfast, and is unusually uncommunicative.</p>
+          <p class="scenario-prompt">What is your next step?</p>
+          <div class="scenario-options" data-correct="1">
+            <button class="option">Finish shower and mention at handover</button>
+            <button class="option">Alert the nurse immediately with exact details</button>
+            <button class="option">Wait and check if he improves by lunch</button>
+          </div>
+          <p class="scenario-feedback"></p>
+        </div>
+      </section>
+
+      <!-- STEP 5: KNOWLEDGE CHECK -->
+      <section class="panel" data-panel="4">
+        <h2>Knowledge Check</h2>
+        <p class="lede">Complete the assessment questions below to unlock module completion.</p>
+        <div class="quiz-intro">5 short questions, tailored to your track. There's no time limit — answer from what you've just covered, then submit to see your score.</div>
+        <div id="quiz-container"></div>
+        <button id="quiz-submit" class="btn-primary">Submit Answers</button>
+        <div id="quiz-result" class="quiz-result hidden"></div>
+      </section>
+
+      <!-- STEP 6: RESOURCES -->
+      <section class="panel" data-panel="5">
+        <h2>Evidence Base &amp; Resources</h2>
+        <p class="lede">This module aligns with national clinical standards. Use the cards below as a quick reference after training — they're worth bookmarking or printing for the staff room.</p>
+
+        <h3>Standards & Guidelines</h3>
+        <ul class="ref-list">
+          <li>Australian Commission on Safety and Quality in Health Care. (2022). <em>Sepsis Clinical Care Standard.</em></li>
+          <li>ACSQHC. (2021). <em>National Consensus Statement for Acute Physiological Deterioration.</em></li>
+        </ul>
+
+        <div class="resource-grid">
+          <div class="resource-card">
+            <h4>Quick reference: ISBAR</h4>
+            <p>Identify, Situation, Background, Assessment, Recommendation — keep this order every time you call for help.</p>
+          </div>
+          <div class="resource-card">
+            <h4>Quick reference: red flags</h4>
+            <p>New confusion, sudden functional decline, reduced intake, "just not themselves" — any one is worth reporting.</p>
+          </div>
+          <div class="resource-card">
+            <h4>Who to contact</h4>
+            <p>Follow your facility's escalation pathway: nurse in charge, then GP or after-hours medical service, then 000 if the resident is critically unwell.</p>
+          </div>
+          <div class="resource-card">
+            <h4>Keep learning</h4>
+            <p>Revisit this module after any real escalation — debriefing against the ISBAR framework helps the whole team improve.</p>
+          </div>
+        </div>
+
+        <div class="completion-banner">
+          <h3>Module Complete!</h3>
+          <p>You have successfully completed the Sepsis Recognition & Escalation module.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- AUTOMATED LINEAR NAVIGATION -->
+    <footer class="nav-footer">
+      <button id="prev-btn" class="btn-secondary" disabled>&larr; Previous</button>
+      <div class="step-counter">Step <span id="current-step-num">1</span> of 6</div>
+      <button id="next-btn" class="btn-primary">Next &rarr;</button>
+    </footer>
+  </div>
+
+<script>
+// ============ STATE MANAGEMENT ============
+let currentStep = 0;
+const totalSteps = 6;
+
+const cover = document.getElementById('cover');
+const fork = document.getElementById('fork');
+const app = document.getElementById('app');
+const roleBadge = document.getElementById('role-badge');
+
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const currentStepNum = document.getElementById('current-step-num');
+
+// ============ INITIALIZATION ============
+document.getElementById('start-course-btn').addEventListener('click', () => {
+  cover.classList.add('hidden');
+  fork.classList.remove('hidden');
+});
+
+function setRole(role) {
+  document.body.classList.remove('role-clinical', 'role-support');
+  document.body.classList.add(role === 'clinical' ? 'role-clinical' : 'role-support');
+  roleBadge.textContent = role === 'clinical' ? 'Nurse / RUSON track' : 'Everyone else track';
+
+  fork.classList.add('hidden');
+  app.classList.remove('hidden');
+
+  currentStep = 0;
+  updateStepView();
+  renderQuiz();
+  resetScenarios();
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.path-card').forEach((card) => {
+  card.addEventListener('click', () => setRole(card.dataset.role));
+});
+
+document.getElementById('switch-role').addEventListener('click', () => {
+  app.classList.add('hidden');
+  fork.classList.remove('hidden');
+});
+
+// ============ LINEAR STEP NAVIGATION ============
+function updateStepView() {
+  document.querySelectorAll('.panel').forEach((panel) => {
+    panel.classList.remove('active');
+    if (parseInt(panel.dataset.panel, 10) === currentStep) {
+      panel.classList.add('active');
+    }
+  });
+
+  document.querySelectorAll('.step-node').forEach((node) => {
+    const stepIdx = parseInt(node.dataset.step, 10);
+    node.classList.remove('active', 'completed');
+    if (stepIdx === currentStep) {
+      node.classList.add('active');
+    } else if (stepIdx < currentStep) {
+      node.classList.add('completed');
+    }
+  });
+
+  const fillPercentage = (currentStep / (totalSteps - 1)) * 80;
+  document.getElementById('progress-fill').style.width = `${fillPercentage}%`;
+
+  currentStepNum.textContent = currentStep + 1;
+  prevBtn.disabled = currentStep === 0;
+
+  if (currentStep === totalSteps - 1) {
+    nextBtn.textContent = 'Finish Course';
+  } else {
+    nextBtn.textContent = 'Next \u2192';
+  }
+
+  window.scrollTo(0, 0);
+}
+
+prevBtn.addEventListener('click', () => {
+  if (currentStep > 0) {
+    currentStep--;
+    updateStepView();
+  }
+});
+
+nextBtn.addEventListener('click', () => {
+  if (currentStep < totalSteps - 1) {
+    currentStep++;
+    updateStepView();
+  } else {
+    alert('Training module completed! Your results have been recorded.');
+  }
+});
+
+// ============ CASE SCENARIO ============
+function resetScenarios() {
+  document.querySelectorAll('.scenario').forEach((scenario) => {
+    const options = scenario.querySelectorAll('.option');
+    const feedback = scenario.querySelector('.scenario-feedback');
+    options.forEach((opt) => opt.classList.remove('correct', 'incorrect'));
+    if (feedback) feedback.textContent = '';
+  });
+}
+
+document.querySelectorAll('.scenario-options').forEach((group) => {
+  const correctIndex = parseInt(group.dataset.correct, 10);
+  const feedback = group.parentElement.querySelector('.scenario-feedback');
+  const options = group.querySelectorAll('.option');
+
+  options.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      options.forEach((b) => b.classList.remove('correct', 'incorrect'));
+      if (i === correctIndex) {
+        btn.classList.add('correct');
+        feedback.textContent = 'Right — escalating promptly is the safest call here.';
+        feedback.style.color = 'var(--fern)';
+      } else {
+        btn.classList.add('incorrect');
+        options[correctIndex].classList.add('correct');
+        feedback.textContent = 'Not quite — the safest response is highlighted above.';
+        feedback.style.color = 'var(--alert)';
+      }
+    });
+  });
+});
+
+// ============ QUIZ ============
+const quizBank = {
+  clinical: [
+    {
+      q: "Which of these is often the FIRST sign of sepsis in an older adult, rather than fever?",
+      choices: ["New or worsening confusion", "A rash", "Joint pain", "Loss of taste"],
+      correct: 0,
+    },
+    {
+      q: "A resident has RR 25, HR 112, Temp 37.2°C. What should happen?",
+      choices: ["Wait for a fever to develop first", "Escalate now — this meets deterioration criteria", "Document only, review tomorrow", "Nothing — temp is normal"],
+      correct: 1,
+    },
+    {
+      q: "In ISBAR, what does the 'B' stand for?",
+      choices: ["Breathing", "Background", "Bloods", "Bed number"],
+      correct: 1,
+    },
+    {
+      q: "A resident has a 'not for CPR' order but is for active treatment. They show signs of sepsis. What should you do?",
+      choices: ["Withhold escalation, they're DNR", "Escalate — DNR isn't a reason to withhold assessment or treatment", "Ask the family first", "Wait until the next shift"],
+      correct: 1,
+    },
+    {
+      q: "Why don't hospital-derived early warning scores always fit residential aged care well?",
+      choices: ["They're too cheap to use", "Subtle behavioural change matters more than vital-sign thresholds in frail older adults", "They take too long to calculate", "They're not evidence-based"],
+      correct: 1,
+    },
+  ],
+  support: [
+    {
+      q: "A resident seems confused and hasn't eaten. What should you do?",
+      choices: ["Wait and see if they improve by the next meal", "Tell the nurse straight away, with details", "Note it in your head for handover", "Nothing, it's probably nothing"],
+      correct: 1,
+    },
+    {
+      q: "When you tell a nurse about a change, what's most useful to include?",
+      choices: ["Just that something feels off", "Who, what you noticed, when, and how it's different from usual", "Your own guess at a diagnosis", "Nothing — nurses will figure it out"],
+      correct: 1,
+    },
+    {
+      q: "Which of these is a genuine red flag worth reporting?",
+      choices: ["Resident is quieter than usual and skipped breakfast", "Resident asked for a second cup of tea", "Resident wants to watch a different TV show", "Resident is tired after a long walk outside"],
+      correct: 0,
+    },
+    {
+      q: "True or false: you need to be sure it's serious before telling a nurse.",
+      choices: ["True — only report confirmed problems", "False — report what you notice, let the nurse assess"],
+      correct: 1,
+    },
+    {
+      q: "Why does what you notice matter so much in aged care?",
+      choices: ["It doesn't really — nurses check everyone anyway", "Staffing ratios mean support staff often spend the most time with residents", "You're expected to diagnose conditions", "It's just a formality"],
+      correct: 1,
+    },
+  ],
+};
+
+function renderQuiz() {
+  const role = document.body.classList.contains('role-clinical') ? 'clinical' : 'support';
+  const container = document.getElementById('quiz-container');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  const result = document.getElementById('quiz-result');
+  if (result) result.classList.add('hidden');
+
+  quizBank[role].forEach((item, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.dataset.correct = item.correct;
+
+    const choicesHtml = item.choices.map((c, ci) => `
+      <label><input type="radio" name="q${qi}" value="${ci}"> ${c}</label>
+    `).join('');
+
+    div.innerHTML = `<p>${qi + 1}. ${item.q}</p><div class="quiz-choices">${choicesHtml}</div>`;
+    container.appendChild(div);
+  });
+}
+
+document.getElementById('quiz-submit').addEventListener('click', () => {
+  const questions = document.querySelectorAll('.quiz-q');
+  let score = 0;
+
+  questions.forEach((qDiv) => {
+    const correct = parseInt(qDiv.dataset.correct, 10);
+    const selected = qDiv.querySelector('input:checked');
+    if (selected && parseInt(selected.value, 10) === correct) {
+      score++;
+    }
+  });
+
+  const result = document.getElementById('quiz-result');
+  result.classList.remove('hidden', 'low');
+
+  const pct = Math.round((score / questions.length) * 100);
+  if (pct < 60) {
+    result.classList.add('low');
+  }
+
+  result.textContent = `Score: ${score} / ${questions.length} (${pct}%)`;
+});
+</script>
+</body>
+</html>
