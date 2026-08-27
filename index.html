@@ -1,290 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Recognition & Escalation of Sepsis in Aged Care</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <title>Sepsis Early Recognition Training</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
-  <!-- ============ COVER SCREEN ============ -->
-  <section id="cover" class="cover-screen">
-    <div class="cover-content">
-      <div class="brand-logo">
-        <svg viewBox="0 0 100 100" class="logo-svg" aria-hidden="true">
-          <circle cx="50" cy="50" r="44" class="logo-ring" />
-          <path d="M 50,22 L 50,78 M 22,50 L 78,50" class="logo-cross" />
-          <path d="M 32,50 Q 42,28 50,50 T 68,50" class="logo-pulse" />
-          <circle cx="50" cy="50" r="6" class="logo-core" />
-        </svg>
-      </div>
-
-      <p class="eyebrow">Aged Care Clinical Safety Training</p>
-      <h1 class="cover-title">Recognition & Escalation<br>of Sepsis in Aged Care</h1>
-      <p class="cover-subtitle">Interactive training for early detection and rapid response</p>
-
-      <div class="cover-credits">
-        <span>Made by:</span>
-        <strong>The Boys</strong>
-      </div>
-
-      <button id="start-course-btn" class="btn-primary btn-large glow-effect">Begin Course &rarr;</button>
-    </div>
-  </section>
-
-  <!-- ============ ROLE FORK ============ -->
-  <section id="fork" class="fork hidden">
-    <div class="fork-intro">
-      <p class="eyebrow">Select Pathway</p>
-      <h2 class="fork-title">Notice something's<br>not right?</h2>
-      <p class="fork-sub">What happens next depends on your role. Choose your designated track to lock in your module pathway.</p>
-    </div>
-
-    <div class="fork-paths">
-      <button class="path-card path-clinical" data-role="clinical">
-        <div class="path-visual">
-          <svg viewBox="0 0 300 90" class="ecg" preserveAspectRatio="none" aria-hidden="true">
-            <polyline class="ecg-line" points="0,45 40,45 55,45 65,15 75,75 85,45 110,45 130,45 145,20 158,70 172,45 200,45 300,45" />
-          </svg>
-        </div>
-        <span class="path-kicker">Track One</span>
-        <h3>Nurse / RUSON</h3>
-        <p>Recognise the clinical picture, know the physiological thresholds, and lead escalation.</p>
-        <span class="path-cta">Select Clinical Track &rarr;</span>
-      </button>
-
-      <button class="path-card path-support" data-role="support">
-        <div class="path-visual">
-          <svg viewBox="0 0 300 90" class="relay" aria-hidden="true">
-            <circle cx="45" cy="45" r="14" class="relay-dot relay-dot--a"/>
-            <circle cx="150" cy="45" r="14" class="relay-dot relay-dot--b"/>
-            <circle cx="255" cy="45" r="14" class="relay-dot relay-dot--c"/>
-            <line x1="59" y1="45" x2="136" y2="45" class="relay-line"/>
-            <line x1="164" y1="45" x2="241" y2="45" class="relay-line"/>
-          </svg>
-        </div>
-        <span class="path-kicker">Track Two</span>
-        <h3>Everyone Else</h3>
-        <p>PCA, allied health & support staff — spot subtle changes and alert a nurse fast.</p>
-        <span class="path-cta">Select Support Track &rarr;</span>
-      </button>
-    </div>
-
-    <p class="fork-footnote">Modules are linear. Navigation controls will unlock as you progress.</p>
-  </section>
-
-  <!-- ============ APP SHELL ============ -->
-  <div id="app" class="app hidden">
-    <header class="topbar">
-      <div class="topbar-left">
-        <svg viewBox="0 0 100 100" class="topbar-logo" aria-hidden="true">
-          <circle cx="50" cy="50" r="44" class="logo-ring" />
-          <path d="M 50,25 L 50,75 M 25,50 L 75,50" class="logo-cross" />
-        </svg>
-        <span class="brand">Recognise &amp; Escalate</span>
+  <div class="app-container">
+    <header class="course-header">
+      <div class="course-title">Sepsis Early Recognition in Residential Aged Care</div>
+      <div class="role-badge-container">
         <span id="role-badge" class="role-badge"></span>
+        <button id="switch-role" class="btn small">Change role</button>
       </div>
-      <button id="switch-role" class="link-btn">Reset Role</button>
     </header>
 
-    <!-- LOCKED PROGRESS TRACKER -->
-    <div class="progress-bar-container">
-      <div class="progress-steps" id="progress-steps">
-        <div class="step-node active" data-step="0"><span class="node-num">1</span><span class="node-label">Definition</span></div>
-        <div class="step-node" data-step="1"><span class="node-num">2</span><span class="node-label">Signs & Symptoms</span></div>
-        <div class="step-node" data-step="2"><span class="node-num">3</span><span class="node-label">Escalation</span></div>
-        <div class="step-node" data-step="3"><span class="node-num">4</span><span class="node-label">Case Scenario</span></div>
-        <div class="step-node" data-step="4"><span class="node-num">5</span><span class="node-label">Knowledge Check</span></div>
-        <div class="step-node" data-step="5"><span class="node-num">6</span><span class="node-label">Resources</span></div>
+    <!-- COVER -->
+    <section id="cover" class="panel active" data-panel="0">
+      <h1>Sepsis Early Recognition in Residential Aged Care</h1>
+      <p class="lead">
+        This short training helps you spot early signs of sepsis in older adults and know when and how to escalate care.
+      </p>
+      <p>
+        You’ll work through realistic scenarios, quick knowledge checks, and a short quiz tailored to your role.
+      </p>
+      <div class="info-box">
+        <strong>Why this matters:</strong> In frail older adults, sepsis can start subtly and progress quickly. Early recognition and escalation save lives.
       </div>
-      <div class="progress-line-fill" id="progress-fill"></div>
-    </div>
+      <button id="start-course-btn" class="btn primary">Start course</button>
+    </section>
 
-    <main class="content">
+    <!-- ROLE FORK -->
+    <section id="fork" class="panel hidden" data-panel="0">
+      <h2>Choose your learning path</h2>
+      <p>
+        Select the track that best matches your role. The core content is similar, but examples and quiz questions are tailored.
+      </p>
 
-      <!-- STEP 1: SEPSIS DEFINITION -->
-      <section class="panel active" data-panel="0">
-        <h2>What is Sepsis?</h2>
-        
-        <div data-role-content="clinical">
-          <div class="definition-box highlight-border">
-            <h3>Clinical Definition (Sepsis-3 Consensus)</h3>
-            <p class="definition-text">
-              <strong>Sepsis</strong> is defined as a life-threatening organ dysfunction caused by a dysregulated host response to infection. In frail aged-care residents, acute deterioration in organ function is quantified by a rapid change in baseline parameters (such as qSOFA or NEWS2 triggers).
-            </p>
-            <p class="definition-text">
-              <strong>Septic Shock</strong> occurs when cellular/metabolic abnormalities deepen, characterized by persistent hypotension requiring vasopressors to maintain MAP &ge; 65 mmHg and serum lactate &gt; 2 mmol/L despite adequate fluid resuscitation.
-            </p>
-          </div>
+      <div class="path-cards">
+        <div class="path-card" data-role="clinical">
+          <h3>Clinical track</h3>
+          <p>For nurses, RUSONs, and other clinical staff who assess, escalate, and coordinate care.</p>
+        </div>
+        <div class="path-card" data-role="support">
+          <h3>Support track</h3>
+          <p>For personal care workers, lifestyle staff, and others who spend the most time with residents.</p>
+        </div>
+      </div>
+
+      <p class="note">
+        You can switch tracks later using the “Change role” option.
+      </p>
+    </section>
+
+    <!-- MAIN APP (steps) -->
+    <main id="app" class="hidden">
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <p class="progress-hint">
+        Step <span id="current-step-num">1</span> of <span id="total-steps-num">6</span>. Each step takes about 3–5 minutes.
+      </p>
+
+      <!-- STEP 1 -->
+      <section class="panel" data-panel="0">
+        <h2>Step 1: What is sepsis?</h2>
+        <p class="step-intro">
+          Sepsis is the body’s extreme response to an infection. In older adults, it often starts subtly and can progress quickly.
+        </p>
+
+        <div class="info-box">
+          <strong>Key idea:</strong> Sepsis is not just “a bad infection”. It’s when the body’s response to infection starts damaging its own tissues and organs.
         </div>
 
-        <div data-role-content="support">
-          <div class="definition-box highlight-border">
-            <h3>Simple Definition</h3>
-            <p class="definition-text">
-              <strong>Sepsis is a medical emergency.</strong> It happens when the body's immune system overreacts to an infection (like a chest or urinary infection) and starts harming its own organs and tissues instead of just fighting the germs.
-            </p>
-            <p class="definition-text">
-              Without quick treatment, sepsis can turn into <strong>septic shock</strong>, causing organs to fail fast. In older adults, it can happen in a matter of hours.
-            </p>
-          </div>
+        <div class="content-card">
+          <h3>Common sources of infection in aged care</h3>
+          <ul>
+            <li>Urinary tract infections</li>
+            <li>Chest infections (e.g. pneumonia)</li>
+            <li>Skin and soft tissue infections</li>
+            <li>Abdominal infections</li>
+          </ul>
         </div>
 
-        <h3>Visual Progression & Presentation</h3>
-        <p class="lede">Sepsis causes systemic tissue hypoperfusion. Patients often look acutely toxic, lethargic, or profoundly mottled.</p>
-
-        <div class="media-gallery">
-          <div class="media-card">
-            <img src="https://www.safetyandquality.gov.au/sites/default/files/styles/embedded/public/2026-05/sepsis-hub-3.png.webp?itok=HT_w0nRj" alt="ACSQHC Clinical Care Standard - Could it be Sepsis?" class="gallery-img" />
-            <span class="media-caption">ACSQHC Standard: Always ask "Could it be Sepsis?"</span>
-          </div>
-          <div class="media-card">
-            <img src="https://scontent-syd2-1.xx.fbcdn.net/v/t39.99422-6/765872363_3606344876203155_6258215332286155139_n.png?stp=dst-jpg_tt6&cstp=mx1080x1350&ctp=s1080x1350&_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=ckEgaZDVS7UQ7kNvwEmflo6&_nc_oc=AdoOZnI89nJEsF8of6_MR-Mt4LZWf2LlGitiZko9XoQuuyZ8wc6w4kAActhAgTNiOis&_nc_zt=14&_nc_ht=scontent-syd2-1.xx&_nc_gid=lNJ50FVejjL8Dm2izpsPaQ&_nc_ss=7b289&oh=00_AQH5wrllRvfcFVqiHL6buguTGl_jIabedblAgwzhIe7NJg&oe=6A80C4A4" alt="Physical manifestations of sepsis including mottling and severe distress" class="gallery-img" />
-            <span class="media-caption">Severe Sepsis: Peripheral cyanosis and skin mottling</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 2: SIGNS & SYMPTOMS -->
-      <section class="panel" data-panel="1">
-        <h2>Signs &amp; symptoms</h2>
-        <p class="lede">Sepsis in older adults rarely looks textbook. Fever is often absent — watch for change from baseline instead.</p>
-
-        <div class="card-grid">
-          <div class="info-card">
-            <h3>General signs</h3>
-            <ul>
-              <li>Fast breathing or shortness of breath</li>
-              <li>Fast heart rate</li>
-              <li>Fever <em>or</em> feeling abnormally cold</li>
-              <li>Clammy, mottled or discoloured skin</li>
-              <li>Extreme pain or physical discomfort</li>
-            </ul>
-          </div>
-          <div class="info-card info-card--flagged">
-            <h3>In older adults specifically</h3>
-            <ul>
-              <li>New or worsening confusion — often the <em>first</em> sign</li>
-              <li>Sudden functional decline — uncharacteristic weakness</li>
-              <li>Reduced appetite or fluid intake</li>
-              <li>Increased falls or unsteadiness</li>
-              <li>"Just not themselves" — a critical red flag</li>
-            </ul>
-            <p class="citation">Wester et al., 2013; Clifford et al., 2016</p>
-          </div>
-        </div>
-
-        <div class="callout" data-role-visible="clinical">
-          <strong>Clinical Note:</strong> Diagnostic error rates exceed 10% in older patients due to diagnostic overshadowing from existing comorbidities.
-        </div>
-
-        <div class="callout" data-role-visible="support">
-          <strong>Support Note:</strong> You don't need to diagnose anything. Notice the change and report it immediately.
-        </div>
-      </section>
-
-      <!-- STEP 3: ESCALATION -->
-      <section class="panel" data-panel="2">
-        <div data-role-content="clinical">
-          <h2>Recognise thresholds, escalate with ISBAR</h2>
-          <p class="lede">Aged-care-derived early warning triggers require rapid escalation.</p>
-
-          <div class="vitals-grid">
-            <div class="vital"><span class="vital-label">Resp. rate</span><span class="vital-value">&gt;22 <small>or</small> &lt;8</span></div>
-            <div class="vital"><span class="vital-label">Heart rate</span><span class="vital-value">&gt;100</span></div>
-            <div class="vital"><span class="vital-label">Temperature</span><span class="vital-value">&lt;36&deg; <small>or</small> &gt;38&deg;</span></div>
-            <div class="vital"><span class="vital-label">Systolic BP</span><span class="vital-value">&lt;100</span></div>
-            <div class="vital"><span class="vital-label">Confusion</span><span class="vital-value">New / worse</span></div>
-            <div class="vital"><span class="vital-label">Urine output</span><span class="vital-value">Reduced</span></div>
-          </div>
-
-          <div class="isbar">
-            <h3>Escalate with ISBAR</h3>
-            <div class="isbar-row"><span class="isbar-letter">I</span><div><strong>Identify</strong> — yourself, resident, location</div></div>
-            <div class="isbar-row"><span class="isbar-letter">S</span><div><strong>Situation</strong> — immediate concern</div></div>
-            <div class="isbar-row"><span class="isbar-letter">B</span><div><strong>Background</strong> — relevant history</div></div>
-            <div class="isbar-row"><span class="isbar-letter">A</span><div><strong>Assessment</strong> — vitals, clinical picture</div></div>
-            <div class="isbar-row"><span class="isbar-letter">R</span><div><strong>Recommendation</strong> — action required & timeframe</div></div>
-          </div>
-        </div>
-
-        <div data-role-content="support">
-          <h2>How to inform the nurse</h2>
-          <p class="lede">You are the front-line warning system. Staffing ratios mean your observations save lives.</p>
-
-          <div class="say-this">
-            <h3>When alerting the nurse, state:</h3>
-            <ol>
-              <li><strong>Who</strong> — resident name & room</li>
-              <li><strong>What</strong> — exact change observed</li>
-              <li><strong>How different</strong> — compared to baseline</li>
-              <li><strong>Context</strong> — recent falls, missed meals</li>
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 4: CASE SCENARIO -->
-      <section class="panel" data-panel="3">
-        <h2>Case Scenario</h2>
-        <div id="scenario-clinical" class="scenario" data-role-content="clinical">
-          <p class="scenario-text">You review Mrs. Ahmed, 84. Family notes she is "not herself" and skipped breakfast. Vitals: RR 24, HR 108, Temp 37.9&deg;C, BP 98/60. ACD notes "no CPR" but active treatment is specified.</p>
-          <p class="scenario-prompt">What is your immediate action?</p>
-          <div class="scenario-options" data-correct="2">
-            <button class="option">Document and reassess next round</button>
-            <button class="option">Manage supportively only due to DNR status</button>
-            <button class="option">Escalate now using ISBAR — meets deterioration criteria and DNR ≠ no treatment</button>
-          </div>
-          <p class="scenario-feedback"></p>
-        </div>
-
-        <div id="scenario-support" class="scenario" data-role-content="support">
-          <p class="scenario-text">You are assisting Mr. Nguyen, 79, with showering. He is unusually confused, refused breakfast, and is unusually uncommunicative.</p>
-          <p class="scenario-prompt">What is your next step?</p>
+        <div class="scenario">
+          <p>A resident has had a cough and fever for two days. Today they are more confused and sleeping more than usual.</p>
           <div class="scenario-options" data-correct="1">
-            <button class="option">Finish shower and mention at handover</button>
-            <button class="option">Alert the nurse immediately with exact details</button>
-            <button class="option">Wait and check if he improves by lunch</button>
+            <button class="option">Document and wait until tomorrow</button>
+            <button class="option">Escalate now — new confusion with infection is concerning for sepsis</button>
+            <button class="option">Give extra fluids and review later</button>
           </div>
-          <p class="scenario-feedback"></p>
+          <div class="scenario-feedback"></div>
         </div>
       </section>
 
-      <!-- STEP 5: KNOWLEDGE CHECK -->
+      <!-- STEP 2: VITALS MONITOR -->
+      <section class="panel" data-panel="1">
+        <h2>Step 2: Recognising deterioration</h2>
+        <p class="step-intro">
+          In aged care, small changes in vital signs and behaviour can be early signs of sepsis. Use the monitor below to see what “normal” and “concerning” look like.
+        </p>
+
+        <div class="vitals-monitor">
+          <div class="vital-card" data-vital="rr">
+            <div class="vital-label">Respiratory rate</div>
+            <div class="vital-value"><span id="rr-value">18</span> <span class="unit">breaths/min</span></div>
+            <div class="vital-range">
+              Typical: <span class="range-ok">12–20</span>
+              <span class="range-alert">≥22 is concerning</span>
+            </div>
+          </div>
+
+          <div class="vital-card" data-vital="hr">
+            <div class="vital-label">Heart rate</div>
+            <div class="vital-value"><span id="hr-value">88</span> <span class="unit">bpm</span></div>
+            <div class="vital-range">
+              Typical: <span class="range-ok">60–100</span>
+              <span class="range-alert">&lt;50 or &gt;110 is concerning</span>
+            </div>
+          </div>
+
+          <div class="vital-card" data-vital="temp">
+            <div class="vital-label">Temperature</div>
+            <div class="vital-value"><span id="temp-value">36.8</span> <span class="unit">°C</span></div>
+            <div class="vital-range">
+              Typical: <span class="range-ok">36.0–37.5</span>
+              <span class="range-alert">&lt;36.0 or &gt;38.0 is concerning</span>
+            </div>
+          </div>
+
+          <div class="vital-card" data-vital="sbp">
+            <div class="vital-label">Systolic BP</div>
+            <div class="vital-value"><span id="sbp-value">128</span> <span class="unit">mmHg</span></div>
+            <div class="vital-range">
+              Typical: <span class="range-ok">110–140</span>
+              <span class="range-alert">&lt;100 is concerning</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <strong>Tip:</strong> In older adults, respiratory rate and mental state changes are often more important than temperature alone.
+        </div>
+
+        <div class="scenario">
+          <p>A resident has: RR 24, HR 112, Temp 37.2°C, SBP 98 mmHg.</p>
+          <div class="scenario-options" data-correct="1">
+            <button class="option">Document and review later</button>
+            <button class="option">Escalate now — this meets deterioration criteria</button>
+            <button class="option">Wait for a fever to develop first</button>
+          </div>
+          <div class="scenario-feedback"></div>
+        </div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section class="panel" data-panel="2">
+        <h2>Step 3: Behavioural change as an early sign</h2>
+        <p class="step-intro">
+          Older adults may not show classic signs like high fever. Instead, you might see new confusion, reduced intake, or increased sleepiness.
+        </p>
+
+        <div class="content-card">
+          <h3>Red flags worth reporting</h3>
+          <ul>
+            <li>New or worsening confusion or agitation</li>
+            <li>Not eating or drinking as usual</li>
+            <li>More sleepy or harder to rouse</li>
+            <li>Subtle but clear change from their normal baseline</li>
+          </ul>
+        </div>
+
+        <div class="scenario">
+          <p>A resident seems quieter than usual, skipped breakfast, and is more confused this morning.</p>
+          <div class="scenario-options" data-correct="1">
+            <button class="option">Wait and see if they improve by lunch</button>
+            <button class="option">Tell the nurse straight away, with details of what’s different</button>
+            <button class="option">Note it in your head for handover</button>
+          </div>
+          <div class="scenario-feedback"></div>
+        </div>
+      </section>
+
+      <!-- STEP 4: ISBAR -->
+      <section class="panel" data-panel="3">
+        <h2>Step 4: Communicating concern – ISBAR</h2>
+        <p class="step-intro">
+          When you escalate, a clear structure helps the clinician understand the situation quickly. ISBAR is a simple framework.
+        </p>
+
+        <div class="isbar-card">
+          <h3>ISBAR quick guide</h3>
+          <dl>
+            <dt>I – Identify</dt>
+            <dd>Resident name, DOB, location</dd>
+
+            <dt>S – Situation</dt>
+            <dd>What’s happening now? Why are you concerned?</dd>
+
+            <dt>B – Background</dt>
+            <dd>Relevant history, baseline function, known conditions</dd>
+
+            <dt>A – Assessment</dt>
+            <dd>Vitals, observations, specific changes you’ve noticed</dd>
+
+            <dt>R – Request</dt>
+            <dd>What you need (review, orders, advice, transfer)</dd>
+          </dl>
+        </div>
+
+        <div class="scenario">
+          <p>You’re calling the GP about a resident with new confusion and fast breathing.</p>
+          <div class="scenario-options" data-correct="1">
+            <button class="option">Start with the resident’s full history from five years ago</button>
+            <button class="option">Start with who you are, the resident’s name, and your main concern</button>
+            <button class="option">Just ask the GP to come and “have a look”</button>
+          </div>
+          <div class="scenario-feedback"></div>
+        </div>
+      </section>
+
+      <!-- STEP 5: DNR / ESCALATION -->
       <section class="panel" data-panel="4">
-        <h2>Knowledge Check</h2>
-        <p class="lede">Complete the assessment questions below to unlock module completion.</p>
-        <div id="quiz-container"></div>
-        <button id="quiz-submit" class="btn-primary">Submit Answers</button>
-        <div id="quiz-result" class="quiz-result hidden"></div>
-      </section>
+        <h2>Step 5: DNR orders and escalation</h2>
+        <p class="step-intro">
+          A “not for CPR” order does not mean “do not treat”. Residents with DNR orders can still be for active treatment, including antibiotics and hospital transfer if appropriate.
+        </p>
 
-      <!-- STEP 6: RESOURCES -->
-      <section class="panel" data-panel="5">
-        <h2>Evidence Base &amp; Resources</h2>
-        <p class="lede">This module aligns with national clinical standards.</p>
+        <div class="info-box">
+          <strong>Key point:</strong> DNR relates only to CPR if the heart or breathing stops. It does not automatically limit other treatments.
+        </div>
 
-        <h3>Standards & Guidelines</h3>
-        <ul class="ref-list">
-          <li>Australian Commission on Safety and Quality in Health Care. (2022). <em>Sepsis Clinical Care Standard.</em></li>
-          <li>ACSQHC. (2021). <em>National Consensus Statement for Acute Physiological Deterioration.</em></li>
-        </ul>
-
-        <div class="completion-banner">
-          <h3>Module Complete!</h3>
-          <p>You have successfully completed the Sepsis Recognition & Escalation module.</p>
+        <div class="scenario">
+          <p>A resident has a “not for CPR” order but is for active treatment. They now show signs of sepsis.</p>
+          <div class="scenario-options" data-correct="1">
+            <button class="option">Withhold escalation, they’re DNR</button>
+            <button class="option">Escalate — DNR isn’t a reason to withhold assessment or treatment</button>
+            <button class="option">Ask the family first before doing anything</button>
+          </div>
+          <div class="scenario-feedback"></div>
         </div>
       </section>
 
-    </main>
+      <!-- STEP 6: QUIZ -->
+      <section class="panel" data-panel="5">
+        <h2>Step 6: Knowledge check</h2>
+        <p class="step-intro">
+          Answer the questions below based on your role. This helps reinforce the key points from the module.
+        </p>
 
-    <!-- AUTOMATED LINEAR NAVIGATION -->
-    <footer class="nav-footer">
-      <button id="prev-btn" class="btn-secondary" disabled>&larr; Previous</button>
-      <div class="step-counter">Step <span id="current-step-num">1</span> of 6</div>
-      <button id="next-btn" class="btn-primary">Next &rarr;</button>
-    </footer>
+        <div id="quiz-container"></div>
+
+        <button id="quiz-submit" class="btn primary" style="margin-top:1rem;">Submit quiz</button>
+
+        <p id="quiz-result" class="quiz-result hidden"></p>
+
+        <div class="info-box" style="margin-top:1rem;">
+          <strong>Next steps:</strong> Discuss any questions you found tricky with your educator or supervisor, and revisit the relevant steps.
+        </div>
+      </section>
+
+      <!-- NAVIGATION -->
+      <div class="nav-buttons">
+        <button id="prev-btn" class="btn">← Previous</button>
+        <button id="next-btn" class="btn primary">Next →</button>
+      </div>
+    </main>
   </div>
 
   <script src="script.js"></script>
